@@ -1,12 +1,16 @@
 package com.sofkau.saintclaireHospital.entity;
 
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "MedicalSpeciality")
 @Table(name = "medical_speciality")
 @Data
