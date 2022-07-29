@@ -32,8 +32,11 @@ public class Patient {
     @Column(name ="age", nullable = false)
     private int age;
 
-    @Column(name = "numer_of_appointments")
+    @Column(name = "number_of_appointments")
     private Long numberOfAppointments;
+
+    @Column(name = "dates_of_appointments")
+    private String datesOfAppointments;
 
     @Override
     public boolean equals(Object o) {
