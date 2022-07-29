@@ -16,6 +16,8 @@ import java.util.List;
 @Data
 
 public class Speciality {
+    private List<Patient> patients = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "speciality_id", nullable = false)
@@ -31,5 +33,13 @@ public class Speciality {
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
-    private List<Patient> patients = new ArrayList<>();
+    public Speciality addPatient(Patient patient){
+        this.patients.add(patient);
+        return this;
+    }
+    public Speciality removePatient(Patient patient){
+        this.patients.remove(patient);
+        return this;
+
+    }
 }
