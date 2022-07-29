@@ -18,21 +18,7 @@ public class SpecialityService implements ISpecialityService {
     @Autowired
     private SpecialityRepository medicalSpecialityRepository;
 
-    @Override
-    public static List<SpecialityDTO> getAllSpeciality(){
-        return medicalSpecialityRepository.findAll()
-                .stream()
-                .map(this::convertSpecialityToDTO)
-                .collect(Collectors.toList());
-    }
 
-    @Override
-    public static SpecialityDTO createSpeciality(SpecialityDTO medicalSpecialityDTO) {
-        Speciality speciality = new Speciality();
-        Speciality.setName(medicalSpecialityDTO.getName());
-        Speciality.setPhysicianInCharge(medicalSpecialityDTO.getPhysicianInCharge());
-        return convertSpecialityToDTO(medicalSpecialityRepository.save(Speciality));
-    }
 
     private SpecialityDTO convertSpecialityToDTO(Speciality medicalSpeciality){
         SpecialityDTO medicalSpecialityDTO = new SpecialityDTO();
@@ -52,6 +38,23 @@ public class SpecialityService implements ISpecialityService {
         patientDTO.setAge(patient.getAge());
         patientDTO.setDni(patient.getDni());
         patientDTO.setDatesOfAppointments(patient.getDatesOfAppointments());
+        patientDTO.setFkSpecialityId(patient.getFkSpecialityId());
+
         return patientDTO;
+    }
+
+    @Override
+    public List<SpecialityDTO> getAllSpeciality() {
+        return medicalSpecialityRepository.findAll()
+                .stream()
+                .map(this::convertSpecialityToDTO)
+                .collect(Collectors.toList());    }
+
+    @Override
+    public SpecialityDTO createSpeciality(SpecialityDTO medicalSpecialityDTO) {
+        Speciality medicalSpeciality = new Speciality();
+        medicalSpeciality.setName(medicalSpecialityDTO.getName());
+        medicalSpeciality.setPhysicianInCharge(medicalSpecialityDTO.getPhysicianInCharge());
+        return convertSpecialityToDTO(medicalSpecialityRepository.save(medicalSpeciality));
     }
 }
