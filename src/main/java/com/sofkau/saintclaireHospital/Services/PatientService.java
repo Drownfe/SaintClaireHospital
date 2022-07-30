@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PatientService{
@@ -18,6 +21,17 @@ public class PatientService{
     private PatientRepository patientRepository;
     public List<Patient> getPatients() {
         return patientRepository.findAll();
+    }
+    public Patient getPatient(Long id) {
+        Optional<Patient> byId = patientRepository.findById(id);
+        if (byId.isEmpty()) throw new IllegalStateException("Patient not into records");
+        return byId.get();
+    }
+    public Patient addPatientDate(Long patientId, String date) {
+        Patient patient = getPatient(patientId);
+        patient.setNumberOfAppointments(patient.getNumberOfAppointments() + 1);
+        patient.setDatesAppointments(date);
+        return patient;
     }
 
 }

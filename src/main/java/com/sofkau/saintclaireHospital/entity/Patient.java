@@ -1,4 +1,6 @@
 package com.sofkau.saintclaireHospital.entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ public class Patient {
             generator = "patient_sequence"
     )
     private Long id;
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false, unique = true)
     private Long dni;
     @Column(updatable = false, length = 45, nullable = false)
     private String name;
@@ -27,45 +29,43 @@ public class Patient {
 
     @Column(columnDefinition = "TEXT")
     private String datesAppointments;
-    @Transient
-    private List<String> datesAppointmentsList = new ArrayList<>();
     private Long numberOfAppointments;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "speciality_id", referencedColumnName = "id")
+    @JsonBackReference
+    private Speciality speciality;
     public Patient() {
     }
     public Patient(Long dni, String name, Integer age) {
         this.dni = dni;
         this.name = name;
         this.age = age;
+        this.numberOfAppointments = 0L;
     }
     public Long getId() {
         return id;
     }
-    public void setId(Long id) {
-        this.id = id;
-    }
     public String getName() {
         return name;
-    }
-    public void setName(String name) {
-        this.name = name;
     }
     public Integer getAge() {
         return age;
     }
-    public void setAge(Integer age) {
-        this.age = age;
-    }
     public Long getDni() {
         return dni;
     }
-    public void setDni(Long dni) {
-        this.dni = dni;
+
+    public List<String> getDatesAppointments() {
+        String strDates = datesAppointments;
+        if(strDates == null) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(List.of(strDates.split(";")));
     }
-    public List<String> getDatesAppointmentsList() {
-        return datesAppointmentsList;
-    }
-    public void setDatesAppointmentsList(List<String> datesAppointmentsList) {
-        this.datesAppointmentsList = datesAppointmentsList;
+    public void setDatesAppointments(String date) {
+        List<String> dates = getDatesAppointments();
+        dates.add(date);
+        this.datesAppointments = String.join(";", dates);
     }
     public Long getNumberOfAppointments() {
         return numberOfAppointments;
@@ -73,11 +73,11 @@ public class Patient {
     public void setNumberOfAppointments(Long numberOfAppointments) {
         this.numberOfAppointments = numberOfAppointments;
     }
-    public String getDatesAppointments() {
-        return datesAppointments;
+    public Speciality getSpeciality() {
+        return speciality;
     }
-    public void setDatesAppointments(String datesAppointments) {
-        this.datesAppointments = datesAppointments;
+    public void setSpeciality(Speciality speciality) {
+        this.speciality = speciality;
     }
 }
 

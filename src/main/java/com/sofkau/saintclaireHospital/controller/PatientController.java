@@ -2,6 +2,7 @@ package com.sofkau.saintclaireHospital.controller;
 
 import com.sofkau.saintclaireHospital.Services.PatientService;
 import com.sofkau.saintclaireHospital.dto.PatientDTO;
+import com.sofkau.saintclaireHospital.entity.Patient;
 import com.sofkau.saintclaireHospital.utility.Response;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,15 @@ import java.util.List;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/patient")
 public class PatientController {
     @Autowired
     private PatientService patientService;
-    private Response response = new Response();
+    @GetMapping
+    public List<Patient> getPatients(){
+        return patientService.getPatients();
+    }
+    /*private Response response = new Response();
     private HttpStatus httpStatus = HttpStatus.OK;
     @PostMapping("create/patient")
     public ResponseEntity<Response> createPatient(@RequestBody PatientDTO patientDTO){
@@ -63,5 +68,5 @@ public class PatientController {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new ResponseEntity(response, httpStatus);
-    }
+    }*/
 }

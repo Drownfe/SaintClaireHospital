@@ -4,6 +4,7 @@ import com.sofkau.saintclaireHospital.Services.SpecialityService;
 import com.sofkau.saintclaireHospital.dto.PatientDTO;
 import com.sofkau.saintclaireHospital.dto.SpecialityDTO;
 import com.sofkau.saintclaireHospital.entity.Patient;
+import com.sofkau.saintclaireHospital.entity.Speciality;
 import com.sofkau.saintclaireHospital.utility.Response;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,27 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("/speciality")
 public class SpecialityController {
 
-    private Response response = new Response();
+    @Autowired
+    private SpecialityService specialtyService;
+
+    @GetMapping
+    public List<Speciality> getSpecialties() {
+        return specialtyService.getSpecialties();
+    }
+
+    @PutMapping(path = "{specialityId}")
+    public void addPatient(
+            @PathVariable("specialityId") Long specialityId,
+            @RequestParam(name = "patientId") Long patientId,
+            @RequestParam(name = "date") String date
+    ) {
+        specialtyService.addPatient(specialityId, patientId, date);
+    }
+
+    /*private Response response = new Response();
     private HttpStatus httpStatus = HttpStatus.OK;
 
     @Autowired
@@ -93,7 +111,7 @@ public class SpecialityController {
     }
 
 
-    /*private Patient convertDTOToPatient(PatientDTO patientDTO) {
+    private Patient convertDTOToPatient(PatientDTO patientDTO) {
         Patient patient = new Patient();
         patient.setName(patientDTO.getName());
         patient.setAge(patientDTO.getAge());

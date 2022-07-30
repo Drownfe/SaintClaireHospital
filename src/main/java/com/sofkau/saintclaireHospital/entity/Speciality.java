@@ -2,6 +2,8 @@ package com.sofkau.saintclaireHospital.entity;
 
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +26,11 @@ public class Speciality {
     private String name;
     @Column(nullable = false, length = 45)
     private String physicianInCharge;
-    @ManyToMany
+    @OneToMany(
+            fetch = FetchType.EAGER,
+            mappedBy = "speciality",
+            cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Patient> patients = new HashSet<>();
     public Speciality() {
     }
@@ -34,9 +40,6 @@ public class Speciality {
     }
     public Long getId() {
         return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
     }
     public String getName() {
         return name;
@@ -52,8 +55,5 @@ public class Speciality {
     }
     public Set<Patient> getPatients() {
         return patients;
-    }
-    public void setPatients(Set<Patient> patients) {
-        this.patients = patients;
     }
 }

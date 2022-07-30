@@ -1,24 +1,35 @@
 package com.sofkau.saintclaireHospital.Services;
 
-import com.sofkau.saintclaireHospital.UI.ISpecialityService;
-import com.sofkau.saintclaireHospital.dto.PatientDTO;
-import com.sofkau.saintclaireHospital.dto.SpecialityDTO;
 import com.sofkau.saintclaireHospital.entity.Patient;
 import com.sofkau.saintclaireHospital.entity.Speciality;
 import com.sofkau.saintclaireHospital.repository.SpecialityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SpecialityService{
     private SpecialityRepository specialityRepository;
+    @Autowired
+    private PatientService patientService;
     public List<Speciality> getSpecialties() {
         return specialityRepository.findAll();
+    }
+    public Speciality getSpeciality(Long id) {
+        Optional<Speciality> byId = specialityRepository.findById(id);
+        if(byId.isEmpty()) throw new IllegalStateException("Speciality not into records");
+        return byId.get();
+    }
+    @Transactional
+    public void addPatient(Long specialityId, Long patientId, String date) {
+        Optional<Speciality> byId = specialityRepository.findById(specialityId);
+        if(byId.isEmpty()) throw new IllegalStateException("Speciality not into records");
+        Speciality speciality = byId.get();
+        Patient patient = patientService.addPatientDate(patientId, date);
+        patient.setSpeciality(speciality);
     }
     /*@Autowired
 
