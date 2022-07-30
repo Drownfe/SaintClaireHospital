@@ -5,7 +5,6 @@ import com.sofkau.saintclaireHospital.dto.Mapper;
 import com.sofkau.saintclaireHospital.dto.PatientDTO;
 import com.sofkau.saintclaireHospital.entity.Patient;
 import com.sofkau.saintclaireHospital.exception.InvalidRequest;
-import com.sofkau.saintclaireHospital.utility.Response;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

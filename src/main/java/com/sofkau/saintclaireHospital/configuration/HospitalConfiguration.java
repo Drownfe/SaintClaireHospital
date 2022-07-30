@@ -7,13 +7,26 @@ import com.sofkau.saintclaireHospital.repository.SpecialityRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Configuration
-public class HospitalConfiguration {
+public class HospitalConfiguration implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry
+                .addMapping("/**")
+                .allowedHeaders("*")
+                .allowedMethods("*")
+                .allowedOrigins("*")
+                .allowCredentials(false)
+                .maxAge(-1);
+        WebMvcConfigurer.super.addCorsMappings(registry);
+    }
     @Bean
     CommandLineRunner commandLineRunner(
             SpecialityRepository repository

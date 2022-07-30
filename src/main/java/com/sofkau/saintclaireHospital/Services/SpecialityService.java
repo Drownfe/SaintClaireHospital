@@ -1,93 +1,81 @@
 package com.sofkau.saintclaireHospital.Services;
 
+import com.sofkau.saintclaireHospital.dto.Mapper;
+import com.sofkau.saintclaireHospital.dto.SpecialityDTO;
 import com.sofkau.saintclaireHospital.entity.Patient;
 import com.sofkau.saintclaireHospital.entity.Speciality;
+import com.sofkau.saintclaireHospital.exception.EntityCreation;
+import com.sofkau.saintclaireHospital.exception.IllegalChange;
+import com.sofkau.saintclaireHospital.exception.NotFound;
 import com.sofkau.saintclaireHospital.repository.SpecialityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-
 @Service
-public class SpecialityService{
+public class SpecialityService {
     private SpecialityRepository specialityRepository;
     @Autowired
     private PatientService patientService;
-    public List<Speciality> getSpecialties() {
+
+    public List<Speciality> getSpecialities() {
         return specialityRepository.findAll();
     }
+
     public Speciality getSpeciality(Long id) {
         Optional<Speciality> byId = specialityRepository.findById(id);
-        if(byId.isEmpty()) throw new IllegalStateException("Speciality not into records");
+        if (byId.isEmpty()) throw new NotFound("Speciality not into records");
         return byId.get();
     }
+
     @Transactional
     public Speciality addPatient(Long specialityId, Long patientId, String date) {
         Optional<Speciality> byId = specialityRepository.findById(specialityId);
-        if(byId.isEmpty()) throw new IllegalStateException("Speciality not into records");
+        if(byId.isEmpty()) {
+            throw new NotFound("This specialty doesn't exist");
+        }
         Speciality speciality = byId.get();
         Patient patient = patientService.addPatientDate(patientId, date);
         patient.setSpeciality(speciality);
         speciality.getPatients().add(patient);
         return speciality;
     }
-    /*@Autowired
-
-
-    @Override public List<SpecialityDTO> getAllSpeciality() {
-        return specialityRepository.findAll()
-                .stream()
-                .map(this::convertSpecialityToDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public SpecialityDTO createSpeciality(SpecialityDTO medicalSpecialityDTO) {
-        Speciality speciality = new Speciality();
-        speciality.setName(medicalSpecialityDTO.getName());
-        speciality.setPhysicianInCharge(medicalSpecialityDTO.getPhysicianInCharge());
-        return convertSpecialityToDTO(specialityRepository.save(speciality));
-    }
-    @Override
-    public boolean deleteSpeciality(SpecialityDTO specialityDTO){
-        Speciality speciality = specialityRepository.findById(specialityDTO.getSpecialityId()).get();
-        if(speciality.getPatients().size() == 0){
-            specialityRepository.deleteById(speciality.getId());
-            return true;
-        }
-        return false;
-    }
-
     @Transactional
-    public void updateName(Long id, String name){
-        specialityRepository.updateName(id, name);
+    public Speciality updateSpeciality(Long specialtyId, String name, String physicianInCharge) {
+        Speciality specialty = getSpeciality(specialtyId);
+        if(name != null) {
+            checkSpecialtyName(name);
+            specialty.setName(name);
+        }
+
+        if(physicianInCharge != null) {
+            checkSpecialtyPhysician(physicianInCharge);
+            specialty.setPhysicianInCharge(physicianInCharge);
+        }
+        return specialty;
+    }
+    public Speciality createSpeciality(SpecialityDTO specialty) {
+        checkSpecialtyName(specialty.name);
+        checkSpecialtyPhysician(specialty.physicianInCharge);
+        return specialityRepository.save(
+                Mapper.createSpecialityEntity(specialty)
+        );
+    }
+    private void checkSpecialtyName(String name) {
+        int nameLen = name.length();
+        if(nameLen < 5 || nameLen > 100) throw new EntityCreation("Specialty name must be between 5 & 100 characters");
+    }
+    private void checkSpecialtyPhysician(String physicianInCharge) {
+        int nameLen = physicianInCharge.length();
+        if(nameLen < 10 || nameLen > 45) throw new EntityCreation("Physician in charge name must be between 10 & 45 characters");
+    }
+    public Speciality deleteSpeciality(Long specialtyId) {
+        Speciality speciality = getSpeciality(specialtyId);
+        int quantityPatients = speciality.getPatients().size();
+        if(quantityPatients > 0) throw new IllegalChange("This specialty still have patients");
+        specialityRepository.delete(speciality);
+        return speciality;
     }
 
-    @Transactional
-    public void updateSpeciality(Long id, String name, String physicianInCharge){
-        specialityRepository.updateMedicalSpeciality(id, name, physicianInCharge);
-    }
-    private PatientDTO convertPatientToDTO(Patient patient){
-        PatientDTO patientDTO = new PatientDTO();
-        patientDTO.setName(patient.getName());
-        patientDTO.setAge(patient.getAge());
-        patientDTO.setDni(patient.getDni());
-        patientDTO.setDatesOfAppointments(patient.getDatesOfAppointments());
-        patientDTO.setFkSpecialityId(patient.getFkSpecialityId());
-        return patientDTO;
-    }
-    private SpecialityDTO convertSpecialityToDTO(Speciality speciality){
-        SpecialityDTO SpecialityDTO = new SpecialityDTO();
-        SpecialityDTO.setSpecialityId(speciality.getId());
-        SpecialityDTO.setName(speciality.getName());
-        SpecialityDTO.setPhysicianInCharge(speciality.getPhysicianInCharge());
-        List<PatientDTO> patientDTOS = new ArrayList<>();
-        for (Patient patient :speciality.getPatients() ) {
-            patientDTOS.add(convertPatientToDTO(patient));
-        }
-        SpecialityDTO.setPatients(patientDTOS);
-        return SpecialityDTO;
-    }*/
 }

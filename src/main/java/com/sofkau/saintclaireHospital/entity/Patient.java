@@ -1,5 +1,6 @@
 package com.sofkau.saintclaireHospital.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sofkau.saintclaireHospital.exception.IllegalChange;
 import com.sofkau.saintclaireHospital.exception.InvalidRequest;
 
 import javax.persistence.*;
@@ -32,7 +33,7 @@ public class Patient {
     @Column(columnDefinition = "TEXT")
     private String datesAppointments;
     private Long numberOfAppointments;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "speciality_id", referencedColumnName = "id")
     @JsonBackReference
     private Speciality speciality;
@@ -90,26 +91,26 @@ public class Patient {
         else cutDatesAppointmentsReverse(newSize);
         this.numberOfAppointments = (long ) newSize;
     }
-    private void cutDatesAppointments(Long numberOfAppointments) {
-        List<String> dates = getDatesAppointments();
-        if(numberOfAppointments > dates.size()) throw new InvalidRequest("That size exceeds the current number of appointments");
-        dates = dates.subList(0, Math.toIntExact(numberOfAppointments));
-        this.datesAppointments = String.join(";", dates);
-    }
-
-    private void cutDatesAppointmentsReverse(Integer newSize) {
-        List<String> dates = getDatesAppointments();
-        if(newSize > dates.size()) throw new InvalidRequest("That size exceeds the current number of appointments");
-        Collections.reverse(dates);
-        dates = dates.subList(0, newSize);
-        Collections.reverse(dates);
-        this.datesAppointments = String.join(";", dates);
-    }
     public Speciality getSpeciality() {
         return speciality;
     }
     public void setSpeciality(Speciality speciality) {
         this.speciality = speciality;
+    }
+
+    private void cutDatesAppointments(Long numberOfAppointments) {
+        List<String> dates = getDatesAppointments();
+        if(numberOfAppointments > dates.size()) throw new IllegalChange("That size exceeds the current number of appointments");
+        dates = dates.subList(0, Math.toIntExact(numberOfAppointments));
+        this.datesAppointments = String.join(";", dates);
+    }
+    private void cutDatesAppointmentsReverse(Integer newSize) {
+        List<String> dates = getDatesAppointments();
+        if(newSize > dates.size()) throw new IllegalChange("That size exceeds the current number of appointments");
+        Collections.reverse(dates);
+        dates = dates.subList(0, newSize);
+        Collections.reverse(dates);
+        this.datesAppointments = String.join(";", dates);
     }
 }
 
