@@ -1,55 +1,83 @@
 package com.sofkau.saintclaireHospital.entity;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity(name = "Patients")
 @Table(name = "patients")
 public class Patient {
 
-    private Long fkSpecialityId;
-
     @Id
-    @GeneratedValue (strategy = GenerationType.AUTO)
-    @Column(name = "patient_id", nullable = false)
-    private Long id;  //PK for user patient in db
-
-    @Column(name = "dni",nullable = false)
+    @SequenceGenerator(
+            name = "patient_sequence",
+            sequenceName = "patient_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "patient_sequence"
+    )
+    private Long id;
+    @Column(updatable = false, nullable = false)
     private Long dni;
-
-    @Column(name = "first_name",nullable = false,length = 50)
+    @Column(updatable = false, length = 45, nullable = false)
     private String name;
+    @Column(updatable = false, nullable = false)
+    private Integer age;
 
-    @Column(name ="age", nullable = false)
-    private int age;
-
-    @Column(name = "number_of_appointments")
+    @Column(columnDefinition = "TEXT")
+    private String datesAppointments;
+    @Transient
+    private List<String> datesAppointmentsList = new ArrayList<>();
     private Long numberOfAppointments;
-
-    @Column(name = "dates_of_appointments")
-    private String datesOfAppointments;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Patient patient = (Patient) o;
-        return age == patient.age && Objects.equals(id, patient.id) && Objects.equals(name, patient.name)
-                && Objects.equals(dni, patient.dni) && Objects.equals(numberOfAppointments, patient.numberOfAppointments)
-                && Objects.equals(fkSpecialityId, patient.fkSpecialityId);
+    public Patient() {
     }
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, age, dni, numberOfAppointments, fkSpecialityId);
+    public Patient(Long dni, String name, Integer age) {
+        this.dni = dni;
+        this.name = name;
+        this.age = age;
     }
-
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public Integer getAge() {
+        return age;
+    }
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+    public Long getDni() {
+        return dni;
+    }
+    public void setDni(Long dni) {
+        this.dni = dni;
+    }
+    public List<String> getDatesAppointmentsList() {
+        return datesAppointmentsList;
+    }
+    public void setDatesAppointmentsList(List<String> datesAppointmentsList) {
+        this.datesAppointmentsList = datesAppointmentsList;
+    }
+    public Long getNumberOfAppointments() {
+        return numberOfAppointments;
+    }
+    public void setNumberOfAppointments(Long numberOfAppointments) {
+        this.numberOfAppointments = numberOfAppointments;
+    }
+    public String getDatesAppointments() {
+        return datesAppointments;
+    }
+    public void setDatesAppointments(String datesAppointments) {
+        this.datesAppointments = datesAppointments;
+    }
 }
+

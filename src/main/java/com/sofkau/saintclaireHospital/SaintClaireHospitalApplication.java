@@ -7,6 +7,5 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SaintClaireHospitalApplication{
 	public static void main(String[] args) {
 		SpringApplication.run(SaintClaireHospitalApplication.class, args);
-
 	}
 }
