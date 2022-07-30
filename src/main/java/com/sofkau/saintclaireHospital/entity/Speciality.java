@@ -34,6 +34,11 @@ public class Speciality {
     private Set<Patient> patients = new HashSet<>();
     public Speciality() {
     }
+    public Speciality(Long id, String name, String physicianInCharge) {
+        this.id = id;
+        this.name = name;
+        this.physicianInCharge = physicianInCharge;
+    }
     public Speciality(String name, String physicianInCharge) {
         this.name = name;
         this.physicianInCharge = physicianInCharge;

@@ -24,12 +24,14 @@ public class SpecialityService{
         return byId.get();
     }
     @Transactional
-    public void addPatient(Long specialityId, Long patientId, String date) {
+    public Speciality addPatient(Long specialityId, Long patientId, String date) {
         Optional<Speciality> byId = specialityRepository.findById(specialityId);
         if(byId.isEmpty()) throw new IllegalStateException("Speciality not into records");
         Speciality speciality = byId.get();
         Patient patient = patientService.addPatientDate(patientId, date);
         patient.setSpeciality(speciality);
+        speciality.getPatients().add(patient);
+        return speciality;
     }
     /*@Autowired
 

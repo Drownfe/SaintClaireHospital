@@ -1,8 +1,10 @@
 package com.sofkau.saintclaireHospital.controller;
 
 import com.sofkau.saintclaireHospital.Services.PatientService;
+import com.sofkau.saintclaireHospital.dto.Mapper;
 import com.sofkau.saintclaireHospital.dto.PatientDTO;
 import com.sofkau.saintclaireHospital.entity.Patient;
+import com.sofkau.saintclaireHospital.exception.InvalidRequest;
 import com.sofkau.saintclaireHospital.utility.Response;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,54 +21,45 @@ public class PatientController {
     @Autowired
     private PatientService patientService;
     @GetMapping
-    public List<Patient> getPatients(){
-        return patientService.getPatients();
+    public List<PatientDTO> getPatients() {
+        return patientService.getPatients()
+                .stream()
+                .map(Mapper::createPatientDTO)
+                .toList();
     }
-    /*private Response response = new Response();
-    private HttpStatus httpStatus = HttpStatus.OK;
-    @PostMapping("create/patient")
-    public ResponseEntity<Response> createPatient(@RequestBody PatientDTO patientDTO){
-        response.restart();
-        try {
-            response.data = patientService.createPatient(patientDTO);
-            httpStatus = HttpStatus.CREATED;
-        } catch (ConstraintViolationException exception){
-            response.data = exception.getCause();
-            response.message = exception.getMessage();
-            response.error = true;
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        return new ResponseEntity(response, httpStatus);
+    @GetMapping(path = "{patientId}")
+    public PatientDTO getPatient(@PathVariable(name = "patientId") Long id) {
+        return Mapper.createPatientDTO(
+                patientService.getPatient(id)
+        );
     }
-    @DeleteMapping("delete/patient")
-    public ResponseEntity<Response> deletePatient(@RequestBody PatientDTO patientDTO){
-        response.restart();
-        boolean state = patientService.deletePatient(patientDTO);
-        if (state){
-            response.data = patientDTO;
-            response.message = "successfully deleted";
-            httpStatus = HttpStatus.OK;
-        }else {
-            response.data = patientDTO;
-            response.message = "Cannot be deleted";
-            httpStatus = HttpStatus.BAD_REQUEST;
-        }
-        return new ResponseEntity(response, httpStatus);
+    @PostMapping
+    public PatientDTO createPatient(@RequestBody PatientDTO patient) {
+        if(
+                patient.dni == null ||
+                patient.name == null ||
+                        patient.age == null
+        ) throw new InvalidRequest("name, age & identification number are required for patient creation");
+
+        return Mapper.createPatientDTO(
+                patientService.createPatient(patient)
+        );
     }
-    @PatchMapping(path = "update/date/patient")
-    public ResponseEntity<Response> updateDate(@RequestBody PatientDTO patientDTO){
-        response.restart();
-        try {
-            patientService.updateDate(patientDTO);
-            response.data = patientDTO;
-            response.message = "successfully updated";
-            httpStatus = HttpStatus.OK;
-        } catch(Exception exception){
-            response.data = exception.getCause();
-            response.message = exception.getMessage();
-            response.error = true;
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        return new ResponseEntity(response, httpStatus);
-    }*/
+    @PutMapping(path = "{patientId}")
+    public PatientDTO deletePatientAppointments(
+            @PathVariable(name = "patientId") Long id,
+            @RequestParam(name = "newLen", defaultValue = "0") int newSize,
+            @RequestParam(name = "lastOnes", required = false, defaultValue = "true") boolean reverse
+    ) {
+        return Mapper.createPatientDTO(
+                patientService.deletePatientAppointments(id, newSize, reverse)
+        );
+    }
+
+    @DeleteMapping(path = "{patientId}")
+    public PatientDTO deletePatient(@PathVariable(name = "patientId") Long id) {
+        return Mapper.createPatientDTO(
+                patientService.deletePatient(id)
+        );
+    }
 }
